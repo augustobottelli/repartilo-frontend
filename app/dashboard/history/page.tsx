@@ -18,7 +18,7 @@ export default function HistoryPage() {
   const [count, setCount] = useState(0);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const { setVehicles, setDeliveries, setRoutes, setQRCodes, setEfficiencyMetrics, setCurrentStep } = useOptimizationStore();
+  const { setVehicles, setDeliveries, setRoutes, setQRCodes, setEfficiencyMetrics, setCurrentStep, setIsViewingHistory } = useOptimizationStore();
 
   useEffect(() => {
     fetchOptimizations();
@@ -74,6 +74,9 @@ export default function HistoryPage() {
         setEfficiencyMetrics(optimization.efficiency_metrics);
       }
       setCurrentStep('optimized');
+
+      // Mark as viewing from history to prevent duplicate saves
+      setIsViewingHistory(true);
 
       // Navigate to optimize page
       router.push('/dashboard/optimize');

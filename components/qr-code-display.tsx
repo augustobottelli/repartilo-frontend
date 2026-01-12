@@ -19,7 +19,7 @@ export function QRCodeDisplay({ routes }: QRCodeDisplayProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [savedSuccessfully, setSavedSuccessfully] = useState(false);
 
-  const { vehicles, deliveries, efficiencyMetrics, setQRCodes: setQRCodesInStore, reset } = useOptimizationStore();
+  const { vehicles, deliveries, efficiencyMetrics, isViewingHistory, setQRCodes: setQRCodesInStore, reset } = useOptimizationStore();
   const { getToken } = useAuth();
 
   useEffect(() => {
@@ -50,6 +50,12 @@ export function QRCodeDisplay({ routes }: QRCodeDisplayProps) {
 
   const autoSaveOptimization = async (qrCodesData: QRCode[]) => {
     try {
+      // Skip auto-save if viewing from history to prevent duplicates
+      if (isViewingHistory) {
+        console.log('Skipping auto-save: viewing from history');
+        return;
+      }
+
       setIsSaving(true);
 
       const token = await getToken();

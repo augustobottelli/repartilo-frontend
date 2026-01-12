@@ -18,6 +18,7 @@ interface OptimizationState {
   isLoading: boolean;
   currentStep: 'upload' | 'validated' | 'optimized';
   error: string | null;
+  isViewingHistory: boolean; // Flag to prevent duplicate saves when viewing from history
 
   // Actions
   setVehicles: (vehicles: Vehicle[]) => void;
@@ -28,6 +29,7 @@ interface OptimizationState {
   setIsLoading: (isLoading: boolean) => void;
   setCurrentStep: (step: 'upload' | 'validated' | 'optimized') => void;
   setError: (error: string | null) => void;
+  setIsViewingHistory: (isViewingHistory: boolean) => void;
   reset: () => void;
 }
 
@@ -40,6 +42,7 @@ const initialState = {
   isLoading: false,
   currentStep: 'upload' as const,
   error: null,
+  isViewingHistory: false,
 };
 
 export const useOptimizationStore = create<OptimizationState>()(
@@ -55,6 +58,7 @@ export const useOptimizationStore = create<OptimizationState>()(
       setIsLoading: (isLoading) => set({ isLoading }),
       setCurrentStep: (currentStep) => set({ currentStep }),
       setError: (error) => set({ error }),
+      setIsViewingHistory: (isViewingHistory) => set({ isViewingHistory }),
       reset: () => set(initialState),
     }),
     {

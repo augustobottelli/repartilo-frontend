@@ -2,8 +2,9 @@
 
 import { UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, Truck } from "lucide-react";
 import { useState } from "react";
+import Link from "next/link";
 
 export function AppTopbar() {
   const [showFeedback, setShowFeedback] = useState(false);
@@ -30,7 +31,17 @@ export function AppTopbar() {
 
   return (
     <div className="bg-white border-b border-gray-200 px-6 py-4">
-      <div className="flex items-center justify-end gap-4">
+      <div className="flex items-center justify-between gap-4">
+        {/* Logo */}
+        <Link href="/dashboard" className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+            <Truck className="w-5 h-5 text-white" />
+          </div>
+          <span className="text-xl font-bold text-gray-900">Repartilo</span>
+        </Link>
+
+        {/* Right side actions */}
+        <div className="flex items-center gap-4">
         {/* Feedback Button */}
         <div className="relative">
           <Button
@@ -80,15 +91,16 @@ export function AppTopbar() {
           )}
         </div>
 
-        {/* User Button */}
-        <UserButton
-          afterSignOutUrl="/"
-          appearance={{
-            elements: {
-              avatarBox: "w-9 h-9",
-            },
-          }}
-        />
+          {/* User Button */}
+          <UserButton
+            afterSignOutUrl="/"
+            appearance={{
+              elements: {
+                avatarBox: "w-9 h-9",
+              },
+            }}
+          />
+        </div>
       </div>
     </div>
   );
