@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { VehicleRoute, QRCode, apiService } from '@/services/api';
 import { useOptimizationStore } from '@/lib/store';
 import { useAuth } from '@clerk/nextjs';
+import { SubscriptionLimitModal } from '@/components/subscription-limit-modal';
 
 interface QRCodeDisplayProps {
   routes: VehicleRoute[];
@@ -18,6 +19,17 @@ export function QRCodeDisplay({ routes }: QRCodeDisplayProps) {
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [savedSuccessfully, setSavedSuccessfully] = useState(false);
+  const [limitModal, setLimitModal] = useState<{
+    open: boolean;
+    currentValue: number;
+    limitValue: number;
+    tier: string;
+  }>({
+    open: false,
+    currentValue: 0,
+    limitValue: 0,
+    tier: 'free',
+  });
 
   const { vehicles, deliveries, efficiencyMetrics, isViewingHistory, setQRCodes: setQRCodesInStore, reset } = useOptimizationStore();
   const { getToken } = useAuth();
@@ -113,6 +125,41 @@ export function QRCodeDisplay({ routes }: QRCodeDisplayProps) {
     qrCodes.forEach((qrCode) => {
       setTimeout(() => downloadQRCode(qrCode), 100);
     });
+  };
+
+  const handleRunAnotherOptimization = async () => {
+    try {
+      // Get user subscription info to check if they can run another optimization
+      const token = await getToken();
+      if (!token) {
+        alert('Por favor inicia sesión para continuar');
+        return;
+      }
+
+      const userInfo = await apiService.getUserInfo(token);
+
+      // Check if user has reached monthly limit
+      if (
+        userInfo.monthly_route_limit !== -1 &&
+        userInfo.current_monthly_usage >= userInfo.monthly_route_limit
+      ) {
+        // Show modal instead of resetting
+        setLimitModal({
+          open: true,
+          currentValue: userInfo.current_monthly_usage,
+          limitValue: userInfo.monthly_route_limit,
+          tier: userInfo.tier,
+        });
+        return;
+      }
+
+      // User has not reached limit, proceed with reset
+      reset();
+    } catch (err: any) {
+      console.error('Error checking limits:', err);
+      // If check fails, allow reset anyway to avoid blocking user
+      reset();
+    }
   };
 
   if (isLoading) {
@@ -244,7 +291,7 @@ export function QRCodeDisplay({ routes }: QRCodeDisplayProps) {
             {/* Run Another Optimization */}
             <div className="mt-6 flex justify-center">
               <Button
-                onClick={() => reset()}
+                onClick={handleRunAnotherOptimization}
                 size="lg"
                 className="min-w-[250px] bg-primary hover:bg-primary/90"
               >
@@ -254,6 +301,16 @@ export function QRCodeDisplay({ routes }: QRCodeDisplayProps) {
             </div>
           </>
         )}
+
+        {/* Monthly Limit Modal */}
+        <SubscriptionLimitModal
+          open={limitModal.open}
+          onOpenChange={(open) => setLimitModal({ ...limitModal, open })}
+          limitType="monthly"
+          currentValue={limitModal.currentValue}
+          limitValue={limitModal.limitValue}
+          currentTier={limitModal.tier}
+        />
       </CardContent>
     </Card>
   );

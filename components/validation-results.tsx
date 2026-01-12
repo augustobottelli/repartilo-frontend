@@ -1,11 +1,14 @@
 "use client";
 
+import { useState } from 'react';
 import { CheckCircle, Truck, MapPin, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useOptimizationStore } from '@/lib/store';
 import { apiService } from '@/services/api';
 import { calculateEfficiencyMetrics } from '@/lib/utils';
+import { useAuth } from '@clerk/nextjs';
+import { SubscriptionLimitModal } from '@/components/subscription-limit-modal';
 
 interface ValidationResultsProps {
   readOnly?: boolean;
@@ -13,13 +16,34 @@ interface ValidationResultsProps {
 
 export function ValidationResults({ readOnly = false }: ValidationResultsProps) {
   const { vehicles, deliveries, setRoutes, setEfficiencyMetrics, setCurrentStep, setIsLoading, setError, isLoading } = useOptimizationStore();
+  const { getToken } = useAuth();
+  const [limitModal, setLimitModal] = useState<{
+    open: boolean;
+    currentValue: number;
+    limitValue: number;
+    tier: string;
+  }>({
+    open: false,
+    currentValue: 0,
+    limitValue: 0,
+    tier: 'free',
+  });
 
   const handleOptimize = async () => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const result = await apiService.optimizeRoutes(vehicles, deliveries);
+      // Get JWT token from Clerk
+      const token = await getToken();
+
+      if (!token) {
+        setError('Not authenticated. Please sign in to continue.');
+        setIsLoading(false);
+        return;
+      }
+
+      const result = await apiService.optimizeRoutes(vehicles, deliveries, token);
 
       if (result.success) {
         setRoutes(result.routes);
@@ -33,7 +57,31 @@ export function ValidationResults({ readOnly = false }: ValidationResultsProps) 
         setError(result.message);
       }
     } catch (error: any) {
-      setError(error.response?.data?.detail || 'Error al optimizar las rutas');
+      // Handle subscription limit errors
+      const errorDetail = error.response?.data?.detail;
+
+      if (errorDetail && typeof errorDetail === 'object' && errorDetail.error_type) {
+        // Subscription limit error - show modal instead of error text
+        const limitError = errorDetail;
+
+        if (limitError.error_type === 'monthly_limit') {
+          setLimitModal({
+            open: true,
+            currentValue: limitError.current_usage,
+            limitValue: limitError.limit,
+            tier: limitError.current_tier,
+          });
+        } else {
+          // Other limit errors (shouldn't happen here since we check early)
+          setError(
+            `${limitError.message}. ${limitError.upgrade_message || ''}`
+          );
+        }
+      } else if (typeof errorDetail === 'string') {
+        setError(errorDetail);
+      } else {
+        setError(error.message || 'Error al optimizar las rutas');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -167,6 +215,16 @@ export function ValidationResults({ readOnly = false }: ValidationResultsProps) 
           </Button>
         </div>
       )}
+
+      {/* Monthly Limit Modal */}
+      <SubscriptionLimitModal
+        open={limitModal.open}
+        onOpenChange={(open) => setLimitModal({ ...limitModal, open })}
+        limitType="monthly"
+        currentValue={limitModal.currentValue}
+        limitValue={limitModal.limitValue}
+        currentTier={limitModal.tier}
+      />
     </div>
   );
 }

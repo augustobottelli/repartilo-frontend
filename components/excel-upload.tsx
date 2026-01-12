@@ -8,10 +8,26 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { apiService } from '@/services/api';
 import { useOptimizationStore } from '@/lib/store';
 import { downloadFile } from '@/lib/utils';
+import { SubscriptionLimitModal } from '@/components/subscription-limit-modal';
+import { useAuth } from '@clerk/nextjs';
 
 export function ExcelUpload() {
   const { setVehicles, setDeliveries, setCurrentStep, setIsLoading, setError, isLoading } = useOptimizationStore();
   const [validationErrors, setValidationErrors] = useState<any>(null);
+  const [limitModal, setLimitModal] = useState<{
+    open: boolean;
+    limitType: 'vehicles' | 'stops';
+    currentValue: number;
+    limitValue: number;
+    tier: string;
+  }>({
+    open: false,
+    limitType: 'vehicles',
+    currentValue: 0,
+    limitValue: 0,
+    tier: 'free',
+  });
+  const { getToken } = useAuth();
 
   const handleDownloadTemplate = async () => {
     try {
@@ -32,6 +48,53 @@ export function ExcelUpload() {
     setValidationErrors(null);
 
     try {
+      // Step 1: Get JWT token
+      const token = await getToken();
+      if (!token) {
+        setError('Por favor inicia sesión para continuar');
+        setIsLoading(false);
+        return;
+      }
+
+      // Step 2: Get user subscription info
+      const userInfo = await apiService.getUserInfo(token);
+
+      // Step 3: Count rows in Excel file (fast, no geocoding)
+      const counts = await apiService.countExcelRows(file);
+
+      // Step 4: Check vehicle limit
+      if (
+        userInfo.max_vehicles_per_optimization !== -1 &&
+        counts.vehicle_count > userInfo.max_vehicles_per_optimization
+      ) {
+        setLimitModal({
+          open: true,
+          limitType: 'vehicles',
+          currentValue: counts.vehicle_count,
+          limitValue: userInfo.max_vehicles_per_optimization,
+          tier: userInfo.tier,
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // Step 5: Check stops limit
+      if (
+        userInfo.max_stops_per_route !== -1 &&
+        counts.delivery_count > userInfo.max_stops_per_route
+      ) {
+        setLimitModal({
+          open: true,
+          limitType: 'stops',
+          currentValue: counts.delivery_count,
+          limitValue: userInfo.max_stops_per_route,
+          tier: userInfo.tier,
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // Step 6: All checks passed, proceed with full validation and geocoding
       const result = await apiService.validateExcel(file);
 
       if (result.success && result.vehicles && result.deliveries) {
@@ -50,7 +113,7 @@ export function ExcelUpload() {
     } finally {
       setIsLoading(false);
     }
-  }, [setVehicles, setDeliveries, setCurrentStep, setIsLoading, setError]);
+  }, [setVehicles, setDeliveries, setCurrentStep, setIsLoading, setError, getToken]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -173,6 +236,21 @@ export function ExcelUpload() {
           </CardContent>
         </Card>
       )}
+
+      {/* Subscription Limit Modal */}
+      <SubscriptionLimitModal
+        open={limitModal.open}
+        onOpenChange={(open) => setLimitModal({ ...limitModal, open })}
+        limitType={limitModal.limitType}
+        currentValue={limitModal.currentValue}
+        limitValue={limitModal.limitValue}
+        currentTier={limitModal.tier}
+        onRetry={() => {
+          // Reset file input to allow upload again
+          setValidationErrors(null);
+          setError(null);
+        }}
+      />
     </div>
   );
 }

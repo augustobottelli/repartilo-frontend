@@ -132,10 +132,36 @@ export interface SavedOptimization {
   deliveries_count: number;
 }
 
+export interface UserSubscriptionInfo {
+  user_id: string;
+  clerk_user_id: string;
+  email: string;
+  tier: string;
+  subscription_status: string;
+  monthly_route_limit: number;
+  max_vehicles_per_optimization: number;
+  max_stops_per_route: number;
+  current_monthly_usage: number;
+  can_optimize: boolean;
+}
+
 // API Methods
 
 export const apiService = {
   // Validation
+  async countExcelRows(file: File): Promise<{ success: boolean; vehicle_count: number; delivery_count: number }> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await api.post('/count-excel-rows', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    return response.data;
+  },
+
   async validateExcel(file: File): Promise<ValidationResult> {
     const formData = new FormData();
     formData.append('file', file);
@@ -154,12 +180,20 @@ export const apiService = {
     return response.data;
   },
 
-  // Optimization
-  async optimizeRoutes(vehicles: Vehicle[], deliveries: Delivery[]): Promise<OptimizationResult> {
-    const response = await api.post<OptimizationResult>('/optimize-routes', {
-      vehicles,
-      deliveries,
-    });
+  // Optimization (requires authentication)
+  async optimizeRoutes(vehicles: Vehicle[], deliveries: Delivery[], token: string): Promise<OptimizationResult> {
+    const response = await api.post<OptimizationResult>(
+      '/optimize-routes',
+      {
+        vehicles,
+        deliveries,
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      }
+    );
     return response.data;
   },
 
@@ -248,6 +282,21 @@ export const apiService = {
     const response = await api.delete(
       `/optimizations/${id}`,
       {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  },
+
+  // User Subscription Info
+  async getUserInfo(token: string): Promise<UserSubscriptionInfo> {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    const response = await api.get(
+      '/user/me',
+      {
+        baseURL: `${API_URL}/api`,  // Changed from /api/v1 to /api to access /api/user/me
         headers: {
           'Authorization': `Bearer ${token}`,
         },
