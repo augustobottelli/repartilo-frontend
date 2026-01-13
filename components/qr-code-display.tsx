@@ -31,12 +31,17 @@ export function QRCodeDisplay({ routes }: QRCodeDisplayProps) {
     tier: 'free',
   });
 
-  const { vehicles, deliveries, efficiencyMetrics, isViewingHistory, setQRCodes: setQRCodesInStore, reset } = useOptimizationStore();
+  const { vehicles, deliveries, efficiencyMetrics, isViewingHistory, qrCodes: storedQrCodes, setQRCodes: setQRCodesInStore, reset } = useOptimizationStore();
   const { getToken } = useAuth();
 
   useEffect(() => {
-    generateQRCodes();
-  }, [routes]);
+    // If viewing from history, use stored QR codes instead of regenerating
+    if (isViewingHistory && storedQrCodes.length > 0) {
+      setQrCodes(storedQrCodes);
+    } else {
+      generateQRCodes();
+    }
+  }, [routes, isViewingHistory]);
 
   const generateQRCodes = async () => {
     setIsLoading(true);

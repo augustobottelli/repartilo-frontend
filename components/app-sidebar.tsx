@@ -1,22 +1,32 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Home, BarChart3, CreditCard, Settings, MessageSquare, History } from "lucide-react";
+import { Home, CreditCard, Settings, MessageSquare, History, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useOptimizationStore } from "@/lib/store";
 
 const navigation = [
   { name: "Home", href: "/dashboard", icon: Home },
+  { name: "Optimise", href: "/dashboard/optimize", icon: Zap, highlight: true },
   { name: "History", href: "/dashboard/history", icon: History },
-  { name: "Usage", href: "/dashboard/usage", icon: BarChart3 },
   { name: "Billing", href: "/dashboard/billing", icon: CreditCard },
   { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [isExpanded, setIsExpanded] = useState(false);
+  const { reset } = useOptimizationStore();
+
+  const handleOptimizeClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    // Always reset to fresh state when clicking Optimize tab
+    reset();
+    router.push('/dashboard/optimize');
+  };
 
   return (
     <div
@@ -31,13 +41,21 @@ export function AppSidebar() {
       <nav className="flex-1 px-2 py-6 space-y-1">
         {navigation.map((item) => {
           const isActive = pathname === item.href;
+          const isHighlighted = item.highlight;
+          const isOptimizeTab = item.name === "Optimise";
+
           return (
             <Link
               key={item.name}
               href={item.href}
+              onClick={isOptimizeTab ? handleOptimizeClick : undefined}
               className={cn(
                 "flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors",
-                isActive
+                isHighlighted && isActive
+                  ? "bg-primary text-white"
+                  : isHighlighted
+                  ? "bg-primary/90 text-white hover:bg-primary"
+                  : isActive
                   ? "bg-primary/10 text-primary"
                   : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
               )}

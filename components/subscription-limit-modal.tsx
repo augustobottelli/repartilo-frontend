@@ -1,6 +1,6 @@
 "use client"
 
-import { AlertCircle, Sparkles } from 'lucide-react'
+import { AlertCircle, Sparkles, DollarSign, Calendar } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -15,11 +15,18 @@ import { useRouter } from 'next/navigation'
 interface SubscriptionLimitModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  limitType: 'monthly' | 'vehicles' | 'stops'
+  limitType: 'monthly' | 'vehicles' | 'stops' | 'overage_cap'
   currentValue: number
   limitValue: number
   currentTier: string
   onRetry?: () => void
+  // Overage pricing info
+  overageAvailable?: boolean
+  overagePriceCents?: number
+  overagesRemaining?: number
+  onProceedWithOverage?: () => void
+  // Control whether modal can be dismissed
+  dismissible?: boolean
 }
 
 export function SubscriptionLimitModal({
@@ -30,16 +37,31 @@ export function SubscriptionLimitModal({
   limitValue,
   currentTier,
   onRetry,
+  overageAvailable = false,
+  overagePriceCents = 0,
+  overagesRemaining = 0,
+  onProceedWithOverage,
+  dismissible = true,
 }: SubscriptionLimitModalProps) {
   const router = useRouter()
+
+  const overagePrice = (overagePriceCents / 100).toFixed(2)
 
   const getTitleAndDescription = () => {
     switch (limitType) {
       case 'monthly':
         return {
-          title: '¡Límite Mensual Alcanzado!',
-          description: `Has utilizado todas tus ${limitValue} optimizaciones de este mes.`,
+          title: overageAvailable ? '¡Límite Mensual Alcanzado!' : '¡Límite Mensual Alcanzado!',
+          description: overageAvailable
+            ? `Has utilizado todas tus ${limitValue} optimizaciones incluidas este mes.`
+            : `Has utilizado todas tus ${limitValue} optimizaciones de este mes.`,
           detail: `Uso actual: ${currentValue}/${limitValue}`,
+        }
+      case 'overage_cap':
+        return {
+          title: '¡Límite de Excesos Alcanzado!',
+          description: `Has utilizado todos tus ${limitValue} excesos disponibles este mes.`,
+          detail: `Excesos usados: ${currentValue}/${limitValue}`,
         }
       case 'vehicles':
         return {
@@ -60,10 +82,13 @@ export function SubscriptionLimitModal({
 
   const getUpgradeMessage = () => {
     if (currentTier === 'free') {
-      return 'Actualiza a PRO para obtener límites más altos'
+      return 'Actualiza a STARTER ($79) para obtener límites más altos y excesos'
     }
-    if (currentTier === 'pro') {
-      return 'Actualiza a ENTERPRISE para límites ilimitados'
+    if (currentTier === 'starter') {
+      return 'Actualiza a PROFESSIONAL ($149) para más límites y excesos más baratos'
+    }
+    if (currentTier === 'professional') {
+      return 'Actualiza a ENTERPRISE ($299) para límites más altos'
     }
     return 'Actualiza tu plan para continuar'
   }
@@ -73,9 +98,18 @@ export function SubscriptionLimitModal({
     onOpenChange(false)
   }
 
+  const handleOpenChange = (newOpen: boolean) => {
+    // Only allow closing if dismissible is true
+    if (dismissible || newOpen === true) {
+      onOpenChange(newOpen)
+    }
+  }
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent onClose={() => onOpenChange(false)}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent
+        onClose={dismissible ? () => handleOpenChange(false) : undefined}
+      >
         <DialogHeader>
           <div className="flex items-center gap-3 mb-2">
             <div className="flex-shrink-0 w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
@@ -102,6 +136,38 @@ export function SubscriptionLimitModal({
             </div>
           </div>
 
+          {/* Overage Option (if available) */}
+          {overageAvailable && limitType === 'monthly' && onProceedWithOverage && (
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border-2 border-green-200">
+              <div className="flex items-start gap-3">
+                <DollarSign className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                <div className="flex-1">
+                  <h4 className="font-semibold text-gray-900 mb-2">
+                    Continuar con Precio por Exceso
+                  </h4>
+                  <div className="space-y-2 text-sm text-gray-700">
+                    <div className="flex justify-between">
+                      <span>Precio por optimización:</span>
+                      <span className="font-semibold">${overagePrice}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Excesos disponibles:</span>
+                      <span className="font-semibold">{overagesRemaining}</span>
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-green-200">
+                      <div className="flex items-start gap-2">
+                        <Calendar className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                        <p className="text-xs text-green-700">
+                          <strong>Sin cargo inmediato:</strong> Los excesos se facturan al final de tu ciclo mensual junto con tu suscripción.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Upgrade CTA */}
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
             <div className="flex items-start gap-3">
@@ -111,8 +177,9 @@ export function SubscriptionLimitModal({
                   {getUpgradeMessage()}
                 </h4>
                 <p className="text-sm text-gray-600">
-                  {currentTier === 'free' && 'Pro: 500 optimizaciones/mes, 20 vehículos, 200 entregas'}
-                  {currentTier === 'pro' && 'Enterprise: Optimizaciones ilimitadas, sin límites'}
+                  {currentTier === 'free' && 'Starter: 100 optimizaciones/mes + excesos a $0.75'}
+                  {currentTier === 'starter' && 'Professional: 500 optimizaciones/mes + excesos a $0.50'}
+                  {currentTier === 'professional' && 'Enterprise: 2,000 optimizaciones/mes + excesos a $0.25'}
                   {currentTier === 'enterprise' && 'Ya tienes el plan más alto disponible'}
                 </p>
               </div>
@@ -121,24 +188,46 @@ export function SubscriptionLimitModal({
         </div>
 
         <DialogFooter>
-          {onRetry && limitType !== 'monthly' && (
+          <div className="flex gap-3 w-full">
+            {onRetry && limitType !== 'monthly' && (
+              <Button
+                variant="outline"
+                onClick={() => {
+                  onOpenChange(false)
+                  onRetry()
+                }}
+              >
+                Subir Otro Archivo
+              </Button>
+            )}
+
+            {/* Proceed with Overage button (if available) */}
+            {overageAvailable && limitType === 'monthly' && onProceedWithOverage && (
+              <Button
+                onClick={() => {
+                  onProceedWithOverage()
+                  onOpenChange(false)
+                }}
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+              >
+                <DollarSign className="w-4 h-4 mr-2" />
+                Continuar (${overagePrice})
+              </Button>
+            )}
+
             <Button
-              variant="outline"
-              onClick={() => {
-                onOpenChange(false)
-                onRetry()
-              }}
+              onClick={handleUpgrade}
+              variant={overageAvailable && limitType === 'monthly' ? 'outline' : 'default'}
+              className={
+                overageAvailable && limitType === 'monthly'
+                  ? 'flex-1'
+                  : 'flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'
+              }
             >
-              Subir Otro Archivo
+              <Sparkles className="w-4 h-4 mr-2" />
+              Ver Planes
             </Button>
-          )}
-          <Button
-            onClick={handleUpgrade}
-            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-          >
-            <Sparkles className="w-4 h-4 mr-2" />
-            Ver Planes
-          </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

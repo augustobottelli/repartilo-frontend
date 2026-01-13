@@ -5,7 +5,7 @@ export interface UserSubscription {
   user_id: string;
   clerk_user_id: string;
   email: string;
-  tier: 'free' | 'pro' | 'enterprise';
+  tier: 'free' | 'starter' | 'professional' | 'enterprise';
   subscription_status: 'active' | 'canceled' | 'past_due' | 'trialing';
   current_monthly_usage: number;
   monthly_route_limit: number;
@@ -13,6 +13,15 @@ export interface UserSubscription {
   max_stops_per_route: number;
   can_optimize: boolean;
   current_period_end?: string;
+  // Overage pricing fields
+  price_monthly_cents: number;
+  overage_price_cents: number;
+  max_overage_optimizations: number;
+  enable_overage: boolean;
+  overage_count_this_month: number;
+  overage_spent_cents: number;
+  total_overage_charges_cents: number;
+  is_using_overages: boolean;
 }
 
 interface UseUserSubscriptionReturn {

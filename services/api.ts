@@ -66,6 +66,8 @@ export interface OptimizationResult {
   total_distance: number;
   total_duration: number;
   vehicles_used: number;
+  is_overage: boolean;
+  overage_charge_cents: number;
 }
 
 export interface QRCode {
@@ -143,6 +145,30 @@ export interface UserSubscriptionInfo {
   max_stops_per_route: number;
   current_monthly_usage: number;
   can_optimize: boolean;
+  // Overage pricing fields
+  price_monthly_cents: number;
+  overage_price_cents: number;
+  max_overage_optimizations: number;
+  enable_overage: boolean;
+  overage_count_this_month: number;
+  overage_spent_cents: number;
+  total_overage_charges_cents: number;
+  is_using_overages: boolean;
+}
+
+export interface OverageCharge {
+  id: string;
+  tier: string;
+  optimizations_count: number;
+  charge_cents: number;
+  created_at: string;
+}
+
+export interface OverageChargesResponse {
+  total_charges_cents: number;
+  total_charges_dollars: number;
+  charge_count: number;
+  charges: OverageCharge[];
 }
 
 // API Methods
@@ -297,6 +323,21 @@ export const apiService = {
       '/user/me',
       {
         baseURL: `${API_URL}/api`,  // Changed from /api/v1 to /api to access /api/user/me
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  },
+
+  // Overage Charges
+  async getOverageCharges(token: string): Promise<OverageChargesResponse> {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    const response = await api.get(
+      '/user/overage-charges/current-month',
+      {
+        baseURL: `${API_URL}/api`,
         headers: {
           'Authorization': `Bearer ${token}`,
         },
