@@ -145,6 +145,9 @@ export interface UserSubscriptionInfo {
   max_stops_per_route: number;
   current_monthly_usage: number;
   can_optimize: boolean;
+  // Stripe fields
+  stripe_customer_id?: string;
+  stripe_subscription_id?: string;
   // Overage pricing fields
   price_monthly_cents: number;
   overage_price_cents: number;
@@ -169,6 +172,18 @@ export interface OverageChargesResponse {
   total_charges_dollars: number;
   charge_count: number;
   charges: OverageCharge[];
+}
+
+export interface CheckoutSessionRequest {
+  tier: 'starter' | 'professional' | 'enterprise';
+}
+
+export interface CheckoutSessionResponse {
+  checkout_url: string;
+}
+
+export interface CustomerPortalResponse {
+  portal_url: string;
 }
 
 // API Methods
@@ -336,6 +351,37 @@ export const apiService = {
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
     const response = await api.get(
       '/user/overage-charges/current-month',
+      {
+        baseURL: `${API_URL}/api`,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  },
+
+  // Stripe Billing
+  async createCheckoutSession(tier: string, token: string): Promise<CheckoutSessionResponse> {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    const response = await api.post(
+      '/billing/create-checkout-session',
+      { tier },
+      {
+        baseURL: `${API_URL}/api`,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  },
+
+  async createCustomerPortalSession(token: string): Promise<CustomerPortalResponse> {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    const response = await api.post(
+      '/billing/create-portal-session',
+      {},
       {
         baseURL: `${API_URL}/api`,
         headers: {

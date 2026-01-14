@@ -13,6 +13,9 @@ export interface UserSubscription {
   max_stops_per_route: number;
   can_optimize: boolean;
   current_period_end?: string;
+  // Stripe fields
+  stripe_customer_id?: string;
+  stripe_subscription_id?: string;
   // Overage pricing fields
   price_monthly_cents: number;
   overage_price_cents: number;
