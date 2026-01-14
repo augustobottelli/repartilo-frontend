@@ -34,7 +34,7 @@ export function Navbar() {
           <div className="flex items-center gap-3">
             {isSignedIn ? (
               <Link href="/dashboard">
-                <Button>Ir al Dashboard</Button>
+                <Button>Dashboard</Button>
               </Link>
             ) : (
               <>
