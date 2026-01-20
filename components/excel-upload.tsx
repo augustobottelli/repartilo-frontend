@@ -148,18 +148,26 @@ export function ExcelUpload() {
               <li>• <strong>Hoja "Vehiculos":</strong> Nombre, Capacidad, Dirección Inicio, Dirección Final (opcional)</li>
               <li>• <strong>Hoja "Direcciones":</strong> Dirección, Paquetes, Nombre</li>
             </ul>
+            <p className="text-xs text-muted-foreground mt-3 pt-3 border-t border-primary/10">
+              💡 La plantilla incluye un ejemplo listo para usar. Puedes probarlo directamente o reemplazar los datos con los tuyos.
+            </p>
           </div>
 
           {/* Download Template Button */}
-          <Button
-            onClick={handleDownloadTemplate}
-            variant="outline"
-            className="w-full"
-            disabled={isLoading}
-          >
-            <Download className="w-4 h-4 mr-2" />
-            Descargar Plantilla Excel
-          </Button>
+          <div className="space-y-2">
+            <Button
+              onClick={handleDownloadTemplate}
+              variant="outline"
+              className="w-full"
+              disabled={isLoading}
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Descargar Plantilla Excel
+            </Button>
+            <p className="text-xs text-center text-muted-foreground">
+              Incluye datos de ejemplo listos para probar
+            </p>
+          </div>
 
           {/* Dropzone */}
           <div
