@@ -24,9 +24,9 @@ export function CTA() {
             Empieza gratis hoy.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-6">
-            <Link href="/sign-in" className="sm:w-auto w-full">
-              <Button size="lg" variant="outline" className="sm:w-auto w-full bg-white text-primary hover:bg-gray-50">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-6">
+            <Link href="/sign-in">
+              <Button size="lg" variant="outline" className="bg-white text-primary hover:bg-gray-50">
                 Empezar Ahora
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
