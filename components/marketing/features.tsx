@@ -2,6 +2,7 @@
 
 import { Upload, Map, Zap, QrCode, BarChart3, Shield } from "lucide-react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 const features = [
   {
@@ -127,13 +128,13 @@ export function Features() {
               </ol>
             </div>
             <div className="bg-white rounded-xl p-6 shadow-lg">
-              <div className="aspect-square bg-gradient-to-br from-primary/20 to-primary/5 rounded-lg flex items-center justify-center">
-                <div className="text-center p-6">
-                  <Upload className="w-16 h-16 text-primary mx-auto mb-4" />
-                  <p className="text-gray-600 font-medium">
-                    Sube tu Excel<br />y empieza a optimizar
-                  </p>
-                </div>
+              <div className="aspect-square rounded-lg overflow-hidden relative">
+                <Image
+                  src="/images/sheet_template.png"
+                  alt="Plantilla de Excel para optimización de rutas"
+                  fill
+                  className="object-contain"
+                />
               </div>
             </div>
           </div>
