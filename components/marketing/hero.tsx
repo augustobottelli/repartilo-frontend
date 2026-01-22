@@ -89,15 +89,15 @@ export function Hero() {
               <div className="mt-4 space-y-2">
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <span className="text-sm text-gray-600">Distancia total</span>
-                  <span className="text-sm font-semibold text-gray-900">142.5 km</span>
+                  <span className="text-sm font-semibold text-gray-900">8.5 km</span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <span className="text-sm text-gray-600">Tiempo estimado</span>
-                  <span className="text-sm font-semibold text-gray-900">3h 25min</span>
+                  <span className="text-sm font-semibold text-gray-900">40 min</span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <span className="text-sm text-gray-600">Vehículos</span>
-                  <span className="text-sm font-semibold text-gray-900">3</span>
+                  <span className="text-sm font-semibold text-gray-900">1</span>
                 </div>
               </div>
             </div>
@@ -116,7 +116,7 @@ export function Hero() {
               transition={{ duration: 3, repeat: Infinity, delay: 1 }}
               className="absolute -bottom-4 -left-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg text-sm font-medium"
             >
-              30 entregas planificadas
+              5 entregas planificadas
             </motion.div>
           </motion.div>
         </div>
