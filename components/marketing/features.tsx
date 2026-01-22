@@ -1,6 +1,6 @@
 "use client";
 
-import { Upload, Map, Zap, QrCode, BarChart3, Shield } from "lucide-react";
+import { Upload, Map, Zap, QrCode, BarChart3, Shield, Truck } from "lucide-react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 
@@ -9,6 +9,11 @@ const features = [
     icon: Upload,
     title: "Importación Simple",
     description: "Sube un archivo Excel con tus vehículos y direcciones. Sin complicaciones.",
+  },
+  {
+    icon: Truck,
+    title: "Asignación Inteligente",
+    description: "El algoritmo asigna automáticamente entregas a vehículos considerando capacidad, ubicación y restricciones.",
   },
   {
     icon: Zap,
@@ -119,6 +124,15 @@ export function Features() {
                 <li className="flex gap-3">
                   <span className="flex-shrink-0 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-semibold">
                     3
+                  </span>
+                  <div>
+                    <p className="font-semibold text-gray-900">Valida tus direcciones</p>
+                    <p className="text-gray-600 text-sm">Verificamos todas las ubicaciones y te alertamos de posibles errores</p>
+                  </div>
+                </li>
+                <li className="flex gap-3">
+                  <span className="flex-shrink-0 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-semibold">
+                    4
                   </span>
                   <div>
                     <p className="font-semibold text-gray-900">Sube y optimiza</p>
