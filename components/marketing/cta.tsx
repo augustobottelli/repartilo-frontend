@@ -21,7 +21,7 @@ export function CTA() {
           </h2>
           <p className="text-lg sm:text-xl mb-8 text-white/90 max-w-2xl mx-auto">
             Únete a cientos de empresas que ya ahorran tiempo y dinero con Repartilo.
-            Prueba gratis durante 14 días.
+            Empieza gratis hoy.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-6">

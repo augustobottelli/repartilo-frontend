@@ -15,7 +15,7 @@ const faqs = [
   },
   {
     question: "¿Puedo probar antes de pagar?",
-    answer: "¡Por supuesto! Todos nuestros planes incluyen 14 días de prueba gratuita sin necesidad de tarjeta de crédito. Puedes explorar todas las funcionalidades y decidir qué plan se adapta mejor a tus necesidades.",
+    answer: "¡Por supuesto! Ofrecemos un plan gratuito con funcionalidades básicas para que pruebes el servicio sin necesidad de tarjeta de crédito. Puedes explorar las funcionalidades y decidir qué plan se adapta mejor a tus necesidades.",
   },
   {
     question: "¿Funcionan las rutas en cualquier país?",

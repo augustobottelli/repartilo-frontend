@@ -10,7 +10,7 @@ const plans = [
     period: "/mes",
     description: "Perfecto para probar el servicio",
     features: [
-      "5 optimizaciones/mes",
+      "5 optimizaciones",
       "2 vehículos por optimización",
       "25 paradas por ruta",
       "Soporte por email",
@@ -23,7 +23,7 @@ const plans = [
     period: "/mes",
     description: "Para pequeñas empresas con 1-5 vehículos",
     features: [
-      "100 optimizaciones/mes",
+      "100 optimizaciones",
       "5 vehículos por optimización",
       "100 paradas por ruta",
       "Soporte prioritario",
@@ -38,7 +38,7 @@ const plans = [
     period: "/mes",
     description: "Para medianas empresas con 5-15 vehículos",
     features: [
-      "500 optimizaciones/mes",
+      "500 optimizaciones",
       "15 vehículos por optimización",
       "200 paradas por ruta",
       "Soporte prioritario",
@@ -54,7 +54,7 @@ const plans = [
     period: "/mes",
     description: "Para flotas grandes con 15+ vehículos",
     features: [
-      "2,000 optimizaciones/mes",
+      "2,000 optimizaciones",
       "50 vehículos por optimización",
       "Paradas ilimitadas por ruta",
       "Soporte 24/7",

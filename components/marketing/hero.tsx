@@ -41,7 +41,7 @@ export function Hero() {
             </div>
 
             <p className="text-sm text-gray-500">
-              Sin tarjeta de crédito. Prueba gratuita de 14 días.
+              Sin tarjeta de crédito. Empieza con nuestro plan gratuito.
             </p>
 
             <div className="grid grid-cols-3 gap-6 mt-12 pt-12 border-t border-gray-200">
