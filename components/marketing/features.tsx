@@ -1,6 +1,6 @@
 "use client";
 
-import { Upload, Map, Zap, QrCode, BarChart3, Shield, Truck } from "lucide-react";
+import { Upload, Map, Zap, QrCode, BarChart3, Truck } from "lucide-react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 
@@ -8,7 +8,7 @@ const features = [
   {
     icon: Upload,
     title: "Importación Simple",
-    description: "Sube un archivo Excel con tus vehículos y direcciones. Sin complicaciones.",
+    description: "Sube un archivo Excel con tus vehículos y direcciones. Validamos automáticamente todas las ubicaciones y te alertamos de posibles errores.",
   },
   {
     icon: Truck,
@@ -34,11 +34,6 @@ const features = [
     icon: BarChart3,
     title: "Métricas Detalladas",
     description: "Analiza distancias, tiempos y utilización de capacidad por vehículo.",
-  },
-  {
-    icon: Shield,
-    title: "Validación Automática",
-    description: "Verificamos todas las direcciones y te alertamos de posibles errores.",
   },
 ];
 
