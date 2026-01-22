@@ -1,60 +1,67 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 import { motion } from "framer-motion";
 
 const plans = [
   {
-    name: "Starter",
-    price: "€29",
+    name: "Free",
+    price: "$0",
     period: "/mes",
-    description: "Perfecto para pequeñas flotas",
+    description: "Perfecto para probar el servicio",
     features: [
-      "Hasta 3 vehículos",
-      "100 entregas por mes",
-      "Optimización básica",
-      "Mapas interactivos",
-      "Códigos QR",
+      "5 optimizaciones/mes",
+      "2 vehículos por optimización",
+      "25 paradas por ruta",
       "Soporte por email",
     ],
-    cta: "Empezar Gratis",
+    popular: false,
+  },
+  {
+    name: "Starter",
+    price: "$79",
+    period: "/mes",
+    description: "Para pequeñas empresas con 1-5 vehículos",
+    features: [
+      "100 optimizaciones/mes",
+      "5 vehículos por optimización",
+      "100 paradas por ruta",
+      "Soporte prioritario",
+      "Generación de códigos QR",
+      "Historial de optimizaciones",
+    ],
     popular: false,
   },
   {
     name: "Professional",
-    price: "€79",
+    price: "$149",
     period: "/mes",
-    description: "Para equipos en crecimiento",
+    description: "Para medianas empresas con 5-15 vehículos",
     features: [
-      "Hasta 10 vehículos",
-      "500 entregas por mes",
-      "Optimización avanzada",
-      "Mapas interactivos",
-      "Códigos QR",
-      "Historial de rutas",
-      "API access",
+      "500 optimizaciones/mes",
+      "15 vehículos por optimización",
+      "200 paradas por ruta",
       "Soporte prioritario",
+      "Analíticas avanzadas",
+      "Acceso API",
+      "Exportación de datos",
     ],
-    cta: "Empezar Prueba",
     popular: true,
   },
   {
     name: "Enterprise",
-    price: "Personalizado",
-    period: "",
-    description: "Para grandes operaciones",
+    price: "$299",
+    period: "/mes",
+    description: "Para flotas grandes con 15+ vehículos",
     features: [
-      "Vehículos ilimitados",
-      "Entregas ilimitadas",
-      "Optimización empresarial",
-      "Integración personalizada",
-      "Gestor de cuenta dedicado",
-      "SLA garantizado",
-      "Formación incluida",
+      "2,000 optimizaciones/mes",
+      "50 vehículos por optimización",
+      "Paradas ilimitadas por ruta",
       "Soporte 24/7",
+      "Gestor de cuenta dedicado",
+      "Integraciones personalizadas",
+      "SLA garantizado",
     ],
-    cta: "Contactar Ventas",
     popular: false,
   },
 ];
@@ -74,12 +81,12 @@ export function Pricing() {
               Precios simples y transparentes
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Elige el plan que mejor se adapte a tu negocio. Todos incluyen 14 días de prueba gratuita.
+              Elige el plan que mejor se adapte a tu negocio. Empieza gratis con funciones limitadas.
             </p>
           </motion.div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
           {plans.map((plan, index) => (
             <motion.div
               key={index}
@@ -108,14 +115,6 @@ export function Pricing() {
                   <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
                   {plan.period && <span className="text-gray-600">{plan.period}</span>}
                 </div>
-
-                <Button
-                  size="lg"
-                  variant={plan.popular ? "default" : "outline"}
-                  className="w-full mb-6"
-                >
-                  {plan.cta}
-                </Button>
 
                 <ul className="space-y-3">
                   {plan.features.map((feature, featureIndex) => (
