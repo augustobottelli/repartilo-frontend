@@ -10,7 +10,38 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Repartilo - Optimizador de Rutas de Entrega",
   description: "Optimiza tus rutas de entrega en segundos. Ahorra tiempo, combustible y dinero con planificación inteligente.",
-  keywords: ["route optimization", "delivery planning", "logistics", "fleet management"],
+  keywords: ["optimización de rutas", "planificación de entregas", "logística", "gestión de flotas", "rutas de reparto", "delivery"],
+  authors: [{ name: "Repartilo" }],
+  creator: "Repartilo",
+  publisher: "Repartilo",
+  metadataBase: new URL("https://www.repartilo.com"),
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "Repartilo - Optimizador de Rutas de Entrega",
+    description: "Optimiza tus rutas de entrega en segundos. Ahorra tiempo, combustible y dinero con planificación inteligente.",
+    url: "https://www.repartilo.com",
+    siteName: "Repartilo",
+    locale: "es_ES",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Repartilo - Optimizador de Rutas de Entrega",
+    description: "Optimiza tus rutas de entrega en segundos. Ahorra tiempo, combustible y dinero con planificación inteligente.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout({
